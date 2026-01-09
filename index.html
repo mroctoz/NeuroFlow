@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroFlow | Arquitetura Cerebral & Performance</title>
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- Navegação Lateral -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <h1>NeuroFlow</h1>
+            </div>
+
+            <div class="user-status-card">
+                <div class="avatar-ring">
+                    <img src="https://i.pravatar.cc/150?img=68" alt="User Avatar">
+                </div>
+                <div class="status-info">
+                    <h3>Alexandre M.</h3>
+                    <span class="badge">Córtex Ativado</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Neuro-Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-target="protocols">
+                    <i class="fa-solid fa-dna"></i>
+                    <span>Protocolos Synapse</span>
+                </a>
+                <a href="#" class="nav-item" data-target="journal">
+                    <i class="fa-solid fa-book-medical"></i>
+                    <span>Diário do Límbico</span>
+                </a>
+                <a href="#" class="nav-item" data-target="library">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Base de Conhecimento</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-sos" onclick="triggerSOS()">
+                    <i class="fa-solid fa-heart-pulse"></i> SOS Amígdala
+                </button>
+            </div>
+        </aside>
+
+        <!-- Área Principal -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="breadcrumbs">
+                    <span id="current-date"></span>
+                    <h2 id="page-title">Visão Geral</h2>
+                </div>
+                <div class="neuro-stats">
+                    <div class="stat-pill" title="Nível de Dopamina (Gamificado)">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span id="xp-points">2,450 XP</span>
+                    </div>
+                    <div class="stat-pill" title="Dias em Fluxo">
+                        <i class="fa-solid fa-fire"></i>
+                        <span>12 Dias</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Container Dinâmico -->
+            <div id="content-container" class="view-container">
+                <!-- O conteúdo será injetado via JS aqui -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modais e Overlays -->
+    <div id="sos-overlay" class="overlay hidden">
+        <div class="sos-modal glass-panel">
+            <div class="sos-header">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <h2>Sequestro Emocional Detectado</h2>
+            </div>
+            <p class="sos-desc">Sua amígdala assumiu o controle. Vamos reativar seu córtex pré-frontal.</p>
+            
+            <div class="breathing-circle">
+                <span class="breath-text">Inspire</span>
+            </div>
+            
+            <div class="traffic-light-container">
+                <div class="light red active" id="light-red">
+                    <span>PARE</span>
+                </div>
+                <div class="light yellow" id="light-yellow">
+                    <span>PENSE</span>
+                </div>
+                <div class="light green" id="light-green">
+                    <span>AJA</span>
+                </div>
+            </div>
+            <div id="sos-instruction" class="sos-instruction">
+                Não reaja agora. Apenas respire.
+            </div>
+            <button class="btn-close-sos" onclick="closeSOS()">Retomei o Controle</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
