@@ -1,6 +1,6 @@
 /* 
  * NEUROFLOW APP CONTROLLER 
- * Versão Estável - Compatibilidade Total
+ * Versão Corrigida - Foco em Login e Renderização
  */
 
 const App = {
@@ -9,77 +9,98 @@ const App = {
         sosInterval: null
     },
 
-    // --- INICIALIZAÇÃO ---
+    // --- 1. INICIALIZAÇÃO ---
     init: function() {
+        console.log("NeuroFlow: Iniciando sistema...");
+        
         try {
+            // Tenta recuperar usuário
             const savedUser = localStorage.getItem('neuroflow_user');
             
             if (savedUser) {
+                console.log("Usuário encontrado:", savedUser);
                 this.state.user = JSON.parse(savedUser);
-                this.checkStreak();
-                this.showScreen('main-interface');
-                this.renderSidebar();
-                this.router('dashboard');
+                this.loadInterface();
             } else {
-                this.showScreen('auth-screen');
+                console.log("Nenhum usuário. Carregando tela de login.");
+                this.loadLogin();
             }
 
+            // Ativa os listeners globais
             this.bindEvents();
+
         } catch (e) {
-            console.error("Erro ao iniciar:", e);
-            // Fallback em caso de erro crítico (limpa dados corrompidos)
-            localStorage.removeItem('neuroflow_user');
-            this.showScreen('auth-screen');
+            console.error("Erro crítico na inicialização:", e);
+            localStorage.clear(); // Limpa dados corrompidos
+            this.loadLogin();
         }
     },
 
-    // --- GERENCIAMENTO DE DADOS ---
-    saveUser: function() {
-        localStorage.setItem('neuroflow_user', JSON.stringify(this.state.user));
-        this.renderSidebar();
+    // --- 2. GERENCIAMENTO DE TELAS ---
+    loadLogin: function() {
+        document.getElementById('auth-screen').classList.remove('hidden');
+        document.getElementById('main-interface').classList.add('hidden');
+        document.getElementById('reader-interface').classList.add('hidden');
     },
 
+    loadInterface: function() {
+        // Esconde login, mostra app
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('main-interface').classList.remove('hidden');
+        
+        // Atualiza dados na tela
+        this.renderSidebar();
+        this.router('dashboard');
+        this.checkStreak();
+    },
+
+    // --- 3. AÇÕES DE USUÁRIO ---
     createUser: function(name) {
+        if (!name || name.trim() === "") {
+            alert("Por favor, digite seu nome.");
+            return;
+        }
+
+        console.log("Criando usuário:", name);
+
         this.state.user = {
             name: name,
             level: 1,
-            xp: 0,
+            xp: 50, // XP inicial de bônus
             streak: 1,
             lastLogin: new Date().toDateString(),
             completedMissions: [],
             unlockedModules: ["mod_01"],
             journal: []
         };
+
         this.saveUser();
-        this.showScreen('main-interface');
-        this.renderSidebar();
-        this.router('dashboard');
+        this.loadInterface();
+    },
+
+    saveUser: function() {
+        localStorage.setItem('neuroflow_user', JSON.stringify(this.state.user));
+        this.renderSidebar(); // Atualiza sidebar sempre que salvar
     },
 
     addXP: function(amount) {
-        if (!this.state.user) return;
-        
-        const oldLevel = this.state.user.level;
         this.state.user.xp += amount;
         
-        // Verifica Level Up
+        // Checa Level Up (baseado no neuroData do data.js)
         const levels = neuroData.config.levels;
-        // Encontra o próximo nível
-        const nextLevel = levels.find(function(l) { 
-            return l.level === oldLevel + 1 
-        });
-        
-        if (nextLevel && this.state.user.xp >= nextLevel.min) {
+        const currentLevel = this.state.user.level;
+        const nextLevelObj = levels.find(l => l.level === currentLevel + 1);
+
+        if (nextLevelObj && this.state.user.xp >= nextLevelObj.min) {
             this.state.user.level++;
-            UI.showToast("Neuroplasticidade! Você subiu para: " + nextLevel.title, 'success');
+            alert(`🎉 Neuroplasticidade! Você subiu para o Nível ${this.state.user.level}: ${nextLevelObj.title}`);
             
-            // Desbloqueia próximo módulo
+            // Libera próximo módulo
             const nextMod = neuroData.modules[this.state.user.level - 1];
             if (nextMod) {
                 this.state.user.unlockedModules.push(nextMod.id);
             }
         }
-        
         this.saveUser();
     },
 
@@ -92,7 +113,7 @@ const App = {
             if (this.state.user.lastLogin === yesterday.toDateString()) {
                 this.state.user.streak++;
             } else {
-                this.state.user.streak = 1;
+                this.state.user.streak = 1; // Quebrou a sequência
             }
             this.state.user.lastLogin = today;
             this.saveUser();
@@ -100,410 +121,291 @@ const App = {
         document.getElementById('streak-count').innerText = this.state.user.streak;
     },
 
-    // --- UI E NAVEGAÇÃO ---
-    showScreen: function(screenId) {
-        const screens = document.querySelectorAll('.screen');
-        for (let i = 0; i < screens.length; i++) {
-            screens[i].classList.add('hidden');
-        }
-        document.getElementById(screenId).classList.remove('hidden');
-    },
-
-    renderSidebar: function() {
-        const u = this.state.user;
-        if (!u) return;
-
-        const levels = neuroData.config.levels;
-        const currLevel = levels.find(function(l) { return l.level === u.level; });
-        const nextLevel = levels.find(function(l) { return l.level === u.level + 1; }) || currLevel;
-
-        document.getElementById('display-name').innerText = u.name;
-        document.getElementById('user-avatar').innerText = u.name.charAt(0).toUpperCase();
-        document.getElementById('user-level-display').innerText = currLevel ? currLevel.title : "Nível " + u.level;
-        document.getElementById('xp-counter').innerText = u.xp + " / " + nextLevel.max;
+    // --- 4. ROTEADOR (Troca de abas) ---
+    router: function(viewName) {
+        console.log("Navegando para:", viewName);
         
-        // Cálculo da barra
-        let percent = 100;
-        if(nextLevel.max > 0) {
-             percent = Math.min(100, (u.xp / nextLevel.max) * 100);
-        }
-        document.getElementById('xp-bar').style.width = percent + "%";
-    },
+        // Atualiza Menu
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+            if (item.dataset.view === viewName) item.classList.add('active');
+        });
 
-    router: function(view) {
         const container = document.getElementById('dynamic-content');
+        container.innerHTML = ''; // Limpa conteúdo
+
         const title = document.getElementById('section-title');
-        const subtitle = document.getElementById('section-subtitle');
-        
-        // Atualiza menu
-        const navItems = document.querySelectorAll('.nav-item');
-        for (let i = 0; i < navItems.length; i++) {
-            navItems[i].classList.remove('active');
-            if(navItems[i].dataset.view === view) {
-                navItems[i].classList.add('active');
-            }
-        }
+        const sub = document.getElementById('section-subtitle');
 
-        container.innerHTML = '';
-
-        if (view === 'dashboard') {
+        // Renderiza conteúdo baseado na view
+        if (viewName === 'dashboard') {
             title.innerText = "Dashboard";
-            subtitle.innerText = "Visão geral do seu progresso neural.";
+            sub.innerText = "Visão geral do seu córtex.";
             Views.dashboard(container);
         } 
-        else if (view === 'modules') {
-            title.innerText = "Módulos";
-            subtitle.innerText = "Treinamento cognitivo e emocional.";
+        else if (viewName === 'modules') {
+            title.innerText = "Protocolos";
+            sub.innerText = "Treinamento neural.";
             Views.modules(container);
         }
-        else if (view === 'journal') {
-            title.innerText = "Diário do Límbico";
-            subtitle.innerText = "Registre e processe suas emoções.";
+        else if (viewName === 'journal') {
+            title.innerText = "Diário";
+            sub.innerText = "Autoconsciência emocional.";
             Views.journal(container);
         }
-        else if (view === 'library') {
+        else if (viewName === 'library') {
             title.innerText = "Biblioteca";
-            subtitle.innerText = "Conceitos da neurociência.";
+            sub.innerText = "Conceitos fundamentais.";
             Views.library(container);
         }
     },
 
-    // --- LÓGICA DE NEGÓCIO ---
-    bindEvents: function() {
-        const loginForm = document.getElementById('login-form');
-        if (loginForm) {
-            loginForm.onsubmit = function(e) {
-                e.preventDefault();
-                const nameInput = document.getElementById('username');
-                if(nameInput && nameInput.value) {
-                    App.createUser(nameInput.value);
-                }
-            };
-        }
+    // --- 5. RENDERIZADORES DE TELA (Views) ---
+    renderSidebar: function() {
+        if (!this.state.user) return;
+        const u = this.state.user;
+        const levelConfig = neuroData.config.levels.find(l => l.level === u.level);
+        const nextLevelConfig = neuroData.config.levels.find(l => l.level === u.level + 1) || levelConfig;
+
+        document.getElementById('display-name').innerText = u.name;
+        document.getElementById('user-avatar').innerText = u.name.charAt(0).toUpperCase();
+        document.getElementById('user-level-display').innerText = levelConfig.title;
+        document.getElementById('xp-counter').innerText = `${u.xp} / ${nextLevelConfig.max}`;
         
-        // Navegação
-        const navItems = document.querySelectorAll('.nav-item');
-        for(let i=0; i<navItems.length; i++) {
-            navItems[i].onclick = function() {
-                App.router(this.dataset.view);
-            };
+        // Barra de XP
+        let percent = Math.min(100, (u.xp / nextLevelConfig.max) * 100);
+        document.getElementById('xp-bar').style.width = `${percent}%`;
+    },
+
+    // --- 6. EVENTOS GLOBAIS ---
+    bindEvents: function() {
+        // Evento de Login
+        const loginBtn = document.querySelector('#login-form button');
+        const loginInput = document.querySelector('#login-form input');
+        const loginForm = document.getElementById('login-form');
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Impede recarregar página
+                const name = loginInput.value;
+                App.createUser(name);
+            });
         }
 
-        // Funções globais para botões HTML
-        window.App = App; 
+        // Navegação Lateral
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const view = this.dataset.view;
+                App.router(view);
+            });
+        });
     }
 };
 
-// --- RENDERIZADORES (VIEWS) ---
+// --- VIEWS COMPONENTS ---
 const Views = {
     dashboard: function(container) {
         const u = App.state.user;
-        
-        // Conta missões totais e feitas
-        let totalMissions = 0;
-        neuroData.modules.forEach(function(m) {
-            totalMissions += m.missions.length;
-        });
+        const totalMissions = neuroData.modules.flatMap(m => m.missions).length;
         const done = u.completedMissions.length;
-        const percent = totalMissions > 0 ? Math.round((done / totalMissions) * 100) : 0;
 
-        let nextMissionHtml = '<p>Todas as missões concluídas!</p>';
-        
-        // Lógica para encontrar próxima missão
-        let found = false;
-        for (let i = 0; i < neuroData.modules.length; i++) {
-            const mod = neuroData.modules[i];
-            if (u.unlockedModules.includes(mod.id)) {
-                for (let j = 0; j < mod.missions.length; j++) {
-                    const mission = mod.missions[j];
-                    if (!u.completedMissions.includes(mission.id)) {
-                        nextMissionHtml = `
-                            <div class="mission-highlight">
-                                <div class="mh-content">
-                                    <h4>${mission.title}</h4>
-                                    <p>${mission.desc}</p>
-                                </div>
-                                <button class="btn-primary" onclick="App.router('modules')">Ir para Módulo</button>
-                            </div>
-                        `;
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if(found) break;
-        }
-
-        const html = `
+        container.innerHTML = `
             <div class="grid-2">
-                <div class="welcome-banner glass-panel full-width">
-                    <div class="banner-content">
-                        <h2>Olá, ${u.name.split(' ')[0]}</h2>
-                        <p>Seu córtex pré-frontal está no comando hoje.</p>
-                        <div class="stats-row">
-                            <span><i class="fa-solid fa-trophy"></i> ${done}/${totalMissions} Missões</span>
-                        </div>
-                    </div>
-                    <div class="banner-chart">
-                        <div class="chart-circle">
-                            <span>${percent}%</span>
-                        </div>
+                <div class="glass-panel full-width">
+                    <h2>Olá, ${u.name}!</h2>
+                    <p>Seu progresso atual é de ${done} missões completadas de ${totalMissions}.</p>
+                    <div style="margin-top: 15px; font-size: 2rem; color: var(--primary-light);">
+                        <i class="fa-solid fa-brain"></i> ${u.xp} XP
                     </div>
                 </div>
-
-                <div class="glass-card full-width">
-                    <div class="card-header">
-                        <h3><i class="fa-solid fa-bullseye"></i> Próximo Passo</h3>
-                    </div>
-                    ${nextMissionHtml}
+                <div class="glass-card full-width" style="cursor: pointer;" onclick="App.router('modules')">
+                    <h3><i class="fa-solid fa-play"></i> Continuar Treinamento</h3>
+                    <p>Clique aqui para acessar os módulos e missões.</p>
                 </div>
             </div>
         `;
-        container.innerHTML = html;
     },
 
     modules: function(container) {
         const u = App.state.user;
-        const grid = document.createElement('div');
-        grid.className = 'module-grid';
-
-        neuroData.modules.forEach(function(mod) {
+        
+        neuroData.modules.forEach(mod => {
             const isLocked = !u.unlockedModules.includes(mod.id);
-            // Verifica se todas as missões foram feitas
-            let isCompleted = true;
-            for(let i=0; i<mod.missions.length; i++) {
-                if(!u.completedMissions.includes(mod.missions[i].id)) {
-                    isCompleted = false;
-                    break;
-                }
-            }
+            const div = document.createElement('div');
+            div.className = `glass-card ${isLocked ? 'locked' : ''}`;
+            div.style.opacity = isLocked ? '0.6' : '1';
             
-            const card = document.createElement('div');
-            let classes = 'glass-card module-card';
-            if(isLocked) classes += ' locked';
-            if(isCompleted) classes += ' finished';
-            
-            card.className = classes;
-            
-            card.innerHTML = `
-                <div class="mod-icon">
-                    <i class="fa-solid ${isLocked ? 'fa-lock' : mod.icon}"></i>
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between;">
+                    <h3><i class="fa-solid ${isLocked ? 'fa-lock' : mod.icon}"></i> ${mod.title}</h3>
+                    ${isLocked ? '<span style="background:rgba(255,255,255,0.1); padding:4px 8px; border-radius:4px; font-size:0.8rem">BLOQUEADO</span>' : ''}
                 </div>
-                <div class="mod-body">
-                    <h4>${mod.title}</h4>
-                    <p>${mod.subtitle}</p>
-                    <div class="mod-meta">
-                        <span>${mod.chapters.length} Caps</span>
-                        <span>${mod.missions.length} Missões</span>
-                    </div>
-                    <button class="btn-action" ${isLocked ? 'disabled' : ''}>
-                        ${isLocked ? 'Bloqueado' : 'Acessar'}
-                    </button>
+                <p>${mod.summary}</p>
+                <div style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">
+                    ${mod.chapters.length} Lições | ${mod.missions.length} Missões
                 </div>
             `;
             
             if (!isLocked) {
-                card.onclick = function() { Reader.open(mod); };
+                div.style.cursor = 'pointer';
+                div.style.borderLeft = '4px solid var(--success)';
+                div.onclick = () => Reader.open(mod);
             }
             
-            grid.appendChild(card);
+            container.appendChild(div);
         });
-        container.appendChild(grid);
     },
 
     journal: function(container) {
         const u = App.state.user;
-        
-        let history = '';
-        if (u.journal.length === 0) {
-            history = `<div class="empty-state"><p>Diário vazio.</p></div>`;
-        } else {
-            history = u.journal.map(function(entry) {
-                return `
-                <div class="journal-item glass-panel" style="border-left: 3px solid ${entry.color}">
-                    <div class="j-header">
-                        <strong style="color:${entry.color}">${entry.emotion}</strong>
-                        <small>${entry.date}</small>
-                    </div>
-                    <p><strong>Gatilho:</strong> ${entry.trigger}</p>
-                    <div class="j-feedback"><i class="fa-solid fa-brain"></i> ${entry.msg}</div>
-                </div>`;
-            }).join('');
-        }
-
-        const emotionsHTML = neuroData.journalEmotions.map(function(e) {
-            return `<button class="emotion-btn" style="border-left: 3px solid ${e.color}" 
-                onclick="Views.selectEmotion('${e.name}', '${e.color}', '${e.msg}')">${e.name}</button>`;
-        }).join('');
-
-        container.innerHTML = `
-            <div class="journal-layout grid-2">
-                <div class="journal-writer glass-panel">
-                    <h3>O que você está sentindo?</h3>
-                    <div class="emotions-grid">${emotionsHTML}</div>
-                    
-                    <div id="journal-inputs" class="hidden">
-                        <label>O que causou isso?</label>
-                        <input type="text" id="j-trigger" placeholder="Ex: Trânsito, Discussão...">
-                        <button class="btn-primary w-100" onclick="Views.saveEntry()">Salvar</button>
-                    </div>
-                </div>
-                <div class="journal-history">
-                    <h3>Histórico</h3>
-                    ${history}
-                </div>
+        let html = `<div class="glass-panel">
+            <h3>Novo Registro</h3>
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0;">
+                ${neuroData.journalEmotions.map(e => 
+                    `<button class="btn-primary" style="background:transparent; border:1px solid ${e.color}; color: white;" 
+                    onclick="Views.saveEntry('${e.name}', '${e.msg}', '${e.color}')">${e.name}</button>`
+                ).join('')}
             </div>
-        `;
+            <p id="journal-feedback" style="font-style: italic; color: var(--text-secondary);"></p>
+        </div>
+        <div class="history-list">
+            <h3>Seu Histórico</h3>
+            ${u.journal.map(j => `
+                <div class="glass-card" style="border-left: 4px solid ${j.color}">
+                    <strong>${j.emotion}</strong> - ${j.date}
+                    <p>${j.msg}</p>
+                </div>
+            `).join('')}
+        </div>`;
+        container.innerHTML = html;
     },
 
+    saveEntry: function(emotion, msg, color) {
+        const entry = {
+            date: new Date().toLocaleString(),
+            emotion, msg, color
+        };
+        App.state.user.journal.unshift(entry);
+        App.addXP(100);
+        alert(msg);
+        App.router('journal');
+    },
+    
     library: function(container) {
         container.innerHTML = `
-            <div class="glass-card full-width">
-                <h3>Conceitos Fundamentais</h3>
-                <ul>
-                    <li style="margin-bottom:10px"><strong>Neuroplasticidade:</strong> Capacidade do cérebro mudar.</li>
-                    <li style="margin-bottom:10px"><strong>Amígdala:</strong> Radar de perigo e emoção.</li>
-                    <li style="margin-bottom:10px"><strong>Córtex Pré-Frontal:</strong> CEO do cérebro (razão).</li>
+            <div class="glass-panel">
+                <h3>Conceitos-Chave</h3>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li><strong>Sequestro da Amígdala:</strong> Quando a emoção domina a razão instantaneamente.</li>
+                    <li><strong>Neuroplasticidade:</strong> Capacidade do cérebro de mudar fisicamente através de novos hábitos.</li>
+                    <li><strong>Córtex Pré-Frontal:</strong> O "CEO" do cérebro, responsável pelo autocontrole.</li>
+                    <li><strong>Fluxo (Flow):</strong> Estado de imersão total e foco, onde a emoção é positiva e canalizada.</li>
                 </ul>
-            </div>`;
-    },
-
-    // --- Helpers de View ---
-    tempEmotion: null,
-    
-    selectEmotion: function(name, color, msg) {
-        this.tempEmotion = { name: name, color: color, msg: msg };
-        document.getElementById('journal-inputs').classList.remove('hidden');
-    },
-
-    saveEntry: function() {
-        const trigger = document.getElementById('j-trigger').value;
-        if(!trigger) {
-            alert("Escreva o gatilho.");
-            return;
-        }
-        
-        const entry = {
-            date: new Date().toLocaleDateString(),
-            emotion: this.tempEmotion.name,
-            color: this.tempEmotion.color,
-            msg: this.tempEmotion.msg,
-            trigger: trigger
-        };
-        
-        App.state.user.journal.unshift(entry);
-        App.addXP(neuroData.config.rewards.journal);
-        UI.showToast("Emoção processada!", "success");
-        App.router('journal');
+            </div>
+        `;
     }
 };
 
-// --- READER SYSTEM ---
+// --- LEITOR DE CONTEÚDO ---
 const Reader = {
-    open: function(module) {
+    open: function(mod) {
         const reader = document.getElementById('reader-interface');
-        const title = document.getElementById('reader-title');
-        const content = document.getElementById('reader-text');
+        const text = document.getElementById('reader-text');
+        document.getElementById('reader-title').innerText = mod.title;
         
-        title.innerText = module.title;
-        
-        let html = `<div class="reader-intro">${module.summary}</div>`;
-        
-        module.chapters.forEach(function(chap, idx) {
-            html += `<div class="chapter"><h3>${idx+1}. ${chap.title}</h3><div class="text">${chap.text}</div></div>`;
+        let html = `<div style="padding: 2rem;">`;
+        mod.chapters.forEach(c => {
+            html += `<h3>${c.title}</h3>${c.text}<hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 20px 0;">`;
         });
         
-        html += `<h3>Missões</h3>`;
-        
+        html += `<h3>Missões Práticas</h3>`;
         const u = App.state.user;
-        module.missions.forEach(function(miss) {
-            const isDone = u.completedMissions.includes(miss.id);
+        
+        mod.missions.forEach(m => {
+            const isDone = u.completedMissions.includes(m.id);
             html += `
-                <div class="mission-row ${isDone ? 'done' : ''}">
-                    <div><strong>${miss.title}</strong><br><small>${miss.desc}</small></div>
-                    <button class="btn-check" ${isDone ? 'disabled' : ''} 
-                    onclick="Reader.finish('${miss.id}', ${miss.xp}, '${module.id}')">
-                        ${isDone ? 'Feito' : 'Concluir'}
+                <div class="glass-card" style="border: 1px solid ${isDone ? 'var(--success)' : 'white'}">
+                    <h4>${m.title} (+${m.xp} XP)</h4>
+                    <p>${m.desc}</p>
+                    <button class="btn-primary" style="margin-top:10px; background: ${isDone ? 'gray' : 'var(--success)'}" 
+                    ${isDone ? 'disabled' : ''} onclick="Reader.complete('${m.id}', ${m.xp}, '${mod.id}')">
+                        ${isDone ? 'Concluído' : 'Marcar como Feito'}
                     </button>
                 </div>
             `;
         });
+        html += `</div>`;
         
-        content.innerHTML = html;
-        App.showScreen('reader-interface');
+        text.innerHTML = html;
+        
+        document.getElementById('main-interface').classList.add('hidden');
+        reader.classList.remove('hidden');
+    },
+
+    complete: function(mId, xp, modId) {
+        const u = App.state.user;
+        if(!u.completedMissions.includes(mId)) {
+            u.completedMissions.push(mId);
+            App.addXP(xp);
+            // Reabre para atualizar botões
+            const mod = neuroData.modules.find(m => m.id === modId);
+            this.open(mod);
+        }
     },
     
-    finish: function(missId, xp, modId) {
-        const u = App.state.user;
-        if(!u.completedMissions.includes(missId)) {
-            u.completedMissions.push(missId);
-            App.addXP(xp);
-            
-            // Re-render
-            const mod = neuroData.modules.find(function(m) { return m.id === modId; });
-            Reader.open(mod);
-        }
+    close: function() {
+        document.getElementById('reader-interface').classList.add('hidden');
+        document.getElementById('main-interface').classList.remove('hidden');
+        App.router('modules');
     }
 };
 
-// --- UI HELPER: TOAST ---
-const UI = {
-    showToast: function(msg, type) {
-        const div = document.createElement('div');
-        div.className = 'toast';
-        div.style.backgroundColor = type === 'success' ? '#10b981' : '#3b82f6';
-        div.innerHTML = `<i class="fa-solid fa-info-circle"></i> ${msg}`;
-        document.body.appendChild(div);
-        setTimeout(function() { div.remove(); }, 3000);
-    }
-};
-
-// --- SOS SYSTEM ---
+// --- SISTEMA SOS ---
 const SOS = {
     timer: null,
     open: function(mode) {
         const modal = document.getElementById('sos-modal');
         if(mode) {
             modal.classList.remove('hidden');
-            this.start();
+            this.run();
         } else {
             modal.classList.add('hidden');
             if(this.timer) clearInterval(this.timer);
-            App.addXP(neuroData.config.rewards.sos);
+            App.addXP(50);
         }
     },
-    start: function() {
+    run: function() {
         const red = document.getElementById('light-red');
-        const yel = document.getElementById('light-yellow');
-        const grn = document.getElementById('light-green');
-        const txt = document.getElementById('breath-text');
+        const yellow = document.getElementById('light-yellow');
+        const green = document.getElementById('light-green');
+        const text = document.getElementById('breath-text');
         
         // Reset
-        red.classList.add('active'); yel.classList.remove('active'); grn.classList.remove('active');
-        txt.innerText = "PARE. Respire Fundo.";
+        red.classList.add('active'); yellow.classList.remove('active'); green.classList.remove('active');
+        text.innerText = "PARE. Respire fundo.";
         
         let s = 0;
         if(this.timer) clearInterval(this.timer);
-        
-        this.timer = setInterval(function() {
+        this.timer = setInterval(() => {
             s++;
             if(s === 5) {
-                red.classList.remove('active'); yel.classList.add('active');
-                txt.innerText = "PENSE. O que você sente?";
+                red.classList.remove('active'); yellow.classList.add('active');
+                text.innerText = "PENSE. Analise a emoção.";
             }
             if(s === 10) {
-                yel.classList.remove('active'); grn.classList.add('active');
-                txt.innerText = "AJA com calma.";
+                yellow.classList.remove('active'); green.classList.add('active');
+                text.innerText = "AJA. Escolha a melhor resposta.";
             }
         }, 1000);
     }
 };
 
-// Global Bindings para HTML onclick
-App.toggleSOS = function(mode) { SOS.open(mode); };
-App.closeReader = function() { App.showScreen('main-interface'); App.renderSidebar(); };
+// Bindings Globais
+App.toggleSOS = (mode) => SOS.open(mode);
+App.closeReader = Reader.close;
+window.App = App;
+window.Reader = Reader;
+window.Views = Views;
 
-// Start
-document.addEventListener('DOMContentLoaded', function() {
-    App.init();
-});
+// Inicia
+document.addEventListener('DOMContentLoaded', () => App.init());
