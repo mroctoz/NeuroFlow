@@ -91,135 +91,53 @@
     <script src="js/app.js" type="module"></script>
     <!-- Script simples inline para a animação do background canvas nesta etapa -->
 <script>
-    const canvas = document.getElementById('neuroCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Variáveis de controle
-    let width, height;
-    let particles = [];
-    const particleCount = 70; // Quantidade de neurônios
-    const connectionDistance = 140;
-    const mouseDistance = 180;
+        const canvas = document.getElementById('neuroCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
 
-    // Mouse
-    const mouse = { x: null, y: null };
-
-    // Configuração do Canvas
-    function resize() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    // Rastrear mouse
-    window.addEventListener('mousemove', (e) => {
-        mouse.x = e.x;
-        mouse.y = e.y;
-    });
-    
-    // Resetar mouse ao sair
-    window.addEventListener('mouseout', () => {
-        mouse.x = null;
-        mouse.y = null;
-    });
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * width;
-            this.y = Math.random() * height;
-            this.vx = (Math.random() - 0.5) * 0.3; // Velocidade lenta
-            this.vy = (Math.random() - 0.5) * 0.3;
-            this.size = Math.random() * 2 + 1;
-            this.baseColor = 'rgba(0, 255, 242,'; // Ciano
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
         }
+        window.addEventListener('resize', resize);
+        resize();
 
-        update() {
-            this.x += this.vx;
-            this.y += this.vy;
-
-            // Bater nas bordas e voltar
-            if (this.x < 0 || this.x > width) this.vx *= -1;
-            if (this.y < 0 || this.y > height) this.vy *= -1;
-
-            // Interação com Mouse (Neuroplasticidade em tempo real)
-            if (mouse.x != null) {
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx*dx + dy*dy);
-
-                if (distance < mouseDistance) {
-                    // Atrair levemente para o mouse
-                    const forceDirectionX = dx / distance;
-                    const forceDirectionY = dy / distance;
-                    const force = (mouseDistance - distance) / mouseDistance;
-                    
-                    const attractionStrength = 0.8; // Força da atração
-                    this.vx += forceDirectionX * force * attractionStrength * 0.05;
-                    this.vy += forceDirectionY * force * attractionStrength * 0.05;
-                }
+        class Bubble {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 60 + 20;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.color = `rgba(${Math.random()*50 + 200}, ${Math.random()*50 + 200}, 255, ${Math.random() * 0.1})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > width) this.speedX *= -1;
+                if (this.y < 0 || this.y > height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
             }
         }
 
-        draw() {
-            ctx.fillStyle = this.baseColor + ' 0.6)';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
+        function init() {
+            particles = [];
+            for (let i = 0; i < 30; i++) particles.push(new Bubble());
         }
-    }
 
-    function initParticles() {
-        particles = [];
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
         }
-    }
 
-    function animate() {
-        ctx.clearRect(0, 0, width, height);
-        
-        for (let i = 0; i < particles.length; i++) {
-            let p1 = particles[i];
-            p1.update();
-            p1.draw();
-
-            // Desenhar conexões (Sinapses)
-            for (let j = i; j < particles.length; j++) {
-                let p2 = particles[j];
-                let distance = Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
-
-                if (distance < connectionDistance) {
-                    ctx.beginPath();
-                    // Opacidade baseada na distância
-                    let opacity = 1 - (distance / connectionDistance);
-                    ctx.strokeStyle = 'rgba(0, 255, 242,' + opacity * 0.3 + ')';
-                    ctx.lineWidth = 1;
-                    ctx.moveTo(p1.x, p1.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    ctx.stroke();
-                }
-            }
-            
-            // Conexões com o Mouse (Foco Atencional)
-            if (mouse.x != null) {
-                let distMouse = Math.sqrt((p1.x - mouse.x)**2 + (p1.y - mouse.y)**2);
-                if (distMouse < mouseDistance) {
-                    ctx.beginPath();
-                    let opacity = 1 - (distMouse / mouseDistance);
-                    ctx.strokeStyle = 'rgba(188, 19, 254,' + opacity * 0.6 + ')'; // Roxo quando conecta com mouse
-                    ctx.lineWidth = 1.5;
-                    ctx.moveTo(p1.x, p1.y);
-                    ctx.lineTo(mouse.x, mouse.y);
-                    ctx.stroke();
-                }
-            }
-        }
-        requestAnimationFrame(animate);
-    }
-
-    initParticles();
-    animate();
+        init();
+        animate();
 </script>
 </body>
 </html>
