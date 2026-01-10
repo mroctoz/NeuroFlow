@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroFlow | Engenharia Mental</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Merriweather:wght@300;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Background Animation Layer -->
+    <div class="neural-bg"></div>
+
+    <!-- APP CONTAINER -->
+    <div id="app-container">
+        
+        <!-- LOGIN SCREEN (The Gateway) -->
+        <section id="login-screen" class="screen active">
+            <div class="login-content">
+                <div class="logo-area">
+                    <i class="fa-solid fa-brain pulse-icon"></i>
+                    <h1>NeuroFlow</h1>
+                    <p class="subtitle">Protocolo de Engenharia Mental</p>
+                </div>
+                
+                <div class="input-group">
+                    <p class="intro-text">Para iniciar o mapeamento neural, identifique-se:</p>
+                    <input type="text" id="username-input" placeholder="Seu nome ou codinome..." autocomplete="off">
+                    <button id="start-btn" class="neuro-btn">Inicializar Sistema <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD (Placeholder for next step) -->
+        <section id="dashboard-screen" class="screen hidden">
+            <nav class="top-nav">
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                    <span id="display-name">Visitante</span>
+                </div>
+                <div class="nav-actions">
+                    <button class="icon-btn"><i class="fa-solid fa-gear"></i></button>
+                </div>
+            </nav>
+            
+            <div class="dashboard-content">
+                <h2>Módulos Neurais</h2>
+                <div id="modules-grid" class="modules-grid">
+                    <!-- Modules will be injected here via JS -->
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="user.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
