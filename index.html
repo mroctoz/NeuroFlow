@@ -3,121 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroFlow | Arquitetura Cerebral & Performance</title>
+    <title>NeuroFlow | Arquitetura da Mente</title>
     
-    <!-- Fontes e Ícones -->
+    <!-- Fontes Premium -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Estilos -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="app-wrapper">
-        <!-- Navegação Lateral -->
-        <aside class="sidebar">
-            <div class="brand">
-                <div class="brand-logo">
+
+    <!-- Background Animado (Neurônios/Fluxo) -->
+    <div class="ambient-background">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div id="app-root">
+        
+        <!-- TELA 1: LOGIN / ONBOARDING -->
+        <section id="auth-screen" class="screen active">
+            <div class="auth-container glass-panel">
+                <div class="auth-header">
+                    <div class="logo-large">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h1>NeuroFlow</h1>
+                    <p>Neurociência aplicada para alta performance e regulação emocional.</p>
+                </div>
+                <form id="login-form" class="auth-form">
+                    <div class="input-group">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" id="username" placeholder="Como deseja ser chamado?" required autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn-primary btn-lg btn-glow">
+                        Iniciar Jornada Neural <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+                <div class="auth-footer">
+                    <p><i class="fa-solid fa-lock"></i> Seus dados ficam salvos apenas no seu navegador.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TELA 2: INTERFACE PRINCIPAL -->
+        <section id="main-interface" class="screen hidden">
+            <!-- Sidebar -->
+            <aside class="sidebar glass-panel">
+                <div class="brand">
                     <i class="fa-solid fa-network-wired"></i>
+                    <span>NeuroFlow</span>
                 </div>
-                <h1>NeuroFlow</h1>
-            </div>
 
-            <div class="user-status-card">
-                <div class="avatar-ring">
-                    <img src="https://i.pravatar.cc/150?img=68" alt="User Avatar">
-                </div>
-                <div class="status-info">
-                    <h3>Alexandre M.</h3>
-                    <span class="badge">Córtex Ativado</span>
-                </div>
-            </div>
-
-            <nav class="nav-menu">
-                <a href="#" class="nav-item active" data-target="dashboard">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Neuro-Dashboard</span>
-                </a>
-                <a href="#" class="nav-item" data-target="protocols">
-                    <i class="fa-solid fa-dna"></i>
-                    <span>Protocolos Synapse</span>
-                </a>
-                <a href="#" class="nav-item" data-target="journal">
-                    <i class="fa-solid fa-book-medical"></i>
-                    <span>Diário do Límbico</span>
-                </a>
-                <a href="#" class="nav-item" data-target="library">
-                    <i class="fa-solid fa-layer-group"></i>
-                    <span>Base de Conhecimento</span>
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <button class="btn-sos" onclick="triggerSOS()">
-                    <i class="fa-solid fa-heart-pulse"></i> SOS Amígdala
-                </button>
-            </div>
-        </aside>
-
-        <!-- Área Principal -->
-        <main class="main-content">
-            <header class="top-bar">
-                <div class="breadcrumbs">
-                    <span id="current-date"></span>
-                    <h2 id="page-title">Visão Geral</h2>
-                </div>
-                <div class="neuro-stats">
-                    <div class="stat-pill" title="Nível de Dopamina (Gamificado)">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span id="xp-points">2,450 XP</span>
+                <div class="user-profile">
+                    <div class="avatar-container">
+                        <div class="avatar-initials" id="user-avatar">U</div>
+                        <div class="status-indicator"></div>
                     </div>
-                    <div class="stat-pill" title="Dias em Fluxo">
-                        <i class="fa-solid fa-fire"></i>
-                        <span>12 Dias</span>
+                    <div class="user-details">
+                        <h3 id="display-name">Usuário</h3>
+                        <span class="user-level" id="user-level-display">Nível 1: Límbico</span>
                     </div>
                 </div>
-            </header>
 
-            <!-- Container Dinâmico -->
-            <div id="content-container" class="view-container">
-                <!-- O conteúdo será injetado via JS aqui -->
-            </div>
-        </main>
-    </div>
+                <div class="xp-container">
+                    <div class="xp-header">
+                        <span>Neuroplasticidade (XP)</span>
+                        <span id="xp-counter">0 / 100</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="xp-bar" style="width: 0%"></div>
+                    </div>
+                </div>
 
-    <!-- Modais e Overlays -->
-    <div id="sos-overlay" class="overlay hidden">
-        <div class="sos-modal glass-panel">
-            <div class="sos-header">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <h2>Sequestro Emocional Detectado</h2>
-            </div>
-            <p class="sos-desc">Sua amígdala assumiu o controle. Vamos reativar seu córtex pré-frontal.</p>
-            
-            <div class="breathing-circle">
-                <span class="breath-text">Inspire</span>
-            </div>
-            
-            <div class="traffic-light-container">
-                <div class="light red active" id="light-red">
-                    <span>PARE</span>
+                <nav class="main-nav">
+                    <ul>
+                        <li class="nav-item active" onclick="navigate('dashboard')">
+                            <i class="fa-solid fa-chart-pie"></i> Visão Geral
+                        </li>
+                        <li class="nav-item" onclick="navigate('modules')">
+                            <i class="fa-solid fa-book-open"></i> Módulos & Aulas
+                        </li>
+                        <li class="nav-item" onclick="navigate('journal')">
+                            <i class="fa-solid fa-pen-fancy"></i> Diário Neuro-Emocional
+                        </li>
+                        <li class="nav-item" onclick="navigate('profile')">
+                            <i class="fa-solid fa-id-card"></i> Perfil Neural
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="sidebar-bottom">
+                    <button class="btn-sos pulsate" onclick="openSOS()">
+                        <i class="fa-solid fa-heart-pulse"></i> SOS AMÍGDALA
+                    </button>
                 </div>
-                <div class="light yellow" id="light-yellow">
-                    <span>PENSE</span>
+            </aside>
+
+            <!-- Área de Conteúdo -->
+            <main class="content-area">
+                <header class="top-header">
+                    <div class="header-text">
+                        <h2 id="section-title">Dashboard</h2>
+                        <p id="section-subtitle">Bem-vindo ao seu centro de controle pré-frontal.</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="streak-badge">
+                            <i class="fa-solid fa-fire"></i>
+                            <span id="streak-count">0</span> Dias
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Container Dinâmico (Aqui o JS injetará o conteúdo) -->
+                <div id="dynamic-content" class="scroll-container">
+                    <!-- O conteúdo será gerado nas próximas etapas -->
+                    <div class="loading-state">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Carregando sinapses...
+                    </div>
                 </div>
-                <div class="light green" id="light-green">
-                    <span>AJA</span>
+            </main>
+        </section>
+
+        <!-- TELA 3: LEITOR IMERSIVO (MINI-LIVROS) -->
+        <section id="reader-interface" class="screen hidden">
+            <div class="reader-container glass-panel">
+                <div class="reader-header">
+                    <button class="btn-icon" onclick="closeReader()"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                    <span id="reader-chapter-title">Módulo 1</span>
+                    <div class="reader-progress">
+                        <span id="reader-percent">0%</span>
+                    </div>
+                </div>
+                <div class="reader-content" id="reader-text-area">
+                    <!-- Texto injetado via JS -->
+                </div>
+                <div class="reader-footer">
+                    <button class="btn-primary" id="btn-complete-reading">Concluir Leitura & Ganhar XP</button>
                 </div>
             </div>
-            <div id="sos-instruction" class="sos-instruction">
-                Não reaja agora. Apenas respire.
+        </section>
+
+        <!-- MODAL: SOS AMÍGDALA (Sempre disponível) -->
+        <div id="sos-modal" class="modal-overlay hidden">
+            <div class="modal-card glass-panel">
+                <button class="modal-close" onclick="closeSOS()"><i class="fa-solid fa-xmark"></i></button>
+                <div class="sos-content text-center">
+                    <div class="icon-pulse-wrapper">
+                        <i class="fa-solid fa-hand"></i>
+                    </div>
+                    <h2>Sequestro Emocional Detectado</h2>
+                    <p>Sua amígdala desligou seu córtex pré-frontal. Não tome decisões agora.</p>
+                    
+                    <div class="traffic-light">
+                        <div class="light red active">PARE</div>
+                        <div class="light yellow">RESPIRE</div>
+                        <div class="light green">PENSE</div>
+                    </div>
+
+                    <div class="breathing-guide">
+                        <div class="circle"></div>
+                        <p id="breath-instruction">Inspire...</p>
+                    </div>
+                </div>
             </div>
-            <button class="btn-close-sos" onclick="closeSOS()">Retomei o Controle</button>
         </div>
+
     </div>
 
-    <script src="script.js"></script>
+    <!-- Scripts (Placeholder para as próximas etapas) -->
+    <script src="data.js"></script> <!-- Dados -->
+    <script src="engine.js"></script> <!-- Lógica -->
+    <script src="app.js"></script>    <!-- UI -->
 </body>
 </html>
