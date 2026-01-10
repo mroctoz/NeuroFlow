@@ -52,61 +52,36 @@
         </section>
 
         <!-- Dashboard (Oculto inicialmente) -->
-        <section id="dashboard-screen" class="screen hidden">
-            <!-- Header -->
-            <header class="top-bar">
-                <div class="user-info">
-                    <div class="avatar-circle"><i class="fa-solid fa-user-astronaut"></i></div>
-                    <div>
-                        <h3 id="user-display-name">Visitante</h3>
-                        <span class="status-badge">Nível: Córtex em Ativação</span>
-                    </div>
-                </div>
-                <div class="day-counter">
-                    <span class="label">Tempo de Protocolo</span>
-                    <div class="counter-box">
-                        <span id="day-number">01</span>
-                        <span class="day-label">DIAS</span>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Conteúdo Principal -->
+<section id="dashboard-screen" class="screen hidden">
             <div class="dashboard-grid">
-                <!-- Sidebar de Navegação -->
+                <!-- Sidebar -->
                 <aside class="sidebar glass-panel">
-                    <nav>
-                        <ul>
-                            <li class="active"><i class="fa-solid fa-microchip"></i> Módulo Atual</li>
-                            <li><i class="fa-solid fa-book-journal-whills"></i> Biblioteca</li>
-                            <li><i class="fa-solid fa-dumbbell"></i> Desafios</li>
-                            <li><i class="fa-solid fa-chart-line"></i> Neuroplasticidade</li>
-                        </ul>
-                    </nav>
+                    <div class="user-profile">
+                        <div class="avatar"><i class="fa-solid fa-brain"></i></div>
+                        <div>
+                            <h3 id="user-display-name" style="font-size:1.1rem; font-weight:700">Usuário</h3>
+                            <span style="font-size:0.8rem; color:var(--text-muted)">Iniciado</span>
+                        </div>
+                    </div>
                     
-                    <div class="brain-status">
-                        <h4>Estado Cerebral</h4>
-                        <div class="status-bar">
-                            <label>Dopamina</label>
-                            <div class="progress"><div class="fill" style="width: 40%"></div></div>
-                        </div>
-                        <div class="status-bar">
-                            <label>Cortisol</label>
-                            <div class="progress"><div class="fill" style="width: 20%; background: var(--color-danger)"></div></div>
-                        </div>
+                    <ul class="nav-links">
+                        <li class="active"><i class="fa-solid fa-calendar-day"></i> Hoje</li>
+                        <li><i class="fa-solid fa-layer-group"></i> Biblioteca</li>
+                        <li><i class="fa-solid fa-list-check"></i> Desafios</li>
+                        <li><i class="fa-solid fa-sliders"></i> Configurações</li>
+                    </ul>
+
+                    <div style="margin-top:auto; padding-top:2rem">
+                        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem">NeuroFlow v2.0</p>
                     </div>
                 </aside>
 
-                <!-- Área de Leitura e Ação -->
-                <section class="content-area glass-panel">
+                <!-- Conteúdo -->
+                <main class="content-area glass-panel">
                     <div id="dynamic-content">
-                        <!-- O conteúdo será injetado aqui via JS nas próximas etapas -->
-                        <div class="placeholder-content">
-                            <h2>Aguardando sincronização neural...</h2>
-                            <div class="loader"></div>
-                        </div>
+                        <!-- JS Injeta aqui -->
                     </div>
-                </section>
+                </main>
             </div>
         </section>
 
