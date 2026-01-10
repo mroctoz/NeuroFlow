@@ -536,3 +536,100 @@ input[type="text"]:focus {
     border-radius: 4px;
     margin-top: 5px;
 }
+
+/* Adicione ao final do css/style.css */
+
+/* --- Responsividade Mobile --- */
+@media (max-width: 900px) {
+    #dashboard-screen {
+        padding: 1rem;
+        height: 100vh;
+        overflow-y: scroll; /* Permitir scroll da página inteira no mobile */
+    }
+
+    .dashboard-grid {
+        display: flex;
+        flex-direction: column;
+        height: auto; /* Altura automática para empilhar */
+    }
+
+    .sidebar {
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .sidebar nav ul {
+        display: flex;
+        overflow-x: auto; /* Scroll horizontal para menu no mobile */
+        gap: 1rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .sidebar nav li {
+        white-space: nowrap;
+        font-size: 1rem;
+        padding: 0.5rem;
+        border-left: none;
+        border-bottom: 2px solid transparent;
+    }
+
+    .sidebar nav li.active {
+        border-bottom-color: var(--primary-cyan);
+        background: none;
+    }
+
+    .content-area {
+        height: auto;
+        overflow: visible;
+        padding: 1.5rem;
+    }
+
+    .login-box {
+        width: 90%;
+        padding: 2rem;
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .day-counter {
+        align-self: flex-end;
+    }
+}
+
+/* --- Tipografia de Leitura Otimizada --- */
+.reading-content p {
+    color: #dcdcdc; /* Levemente off-white para menos fadiga ocular */
+    font-size: 1.15rem;
+    max-width: 75ch; /* Largura ideal de leitura */
+}
+
+strong {
+    color: var(--primary-cyan);
+    font-weight: 600;
+}
+
+/* --- Efeitos de Foco nos Inputs --- */
+input:focus::placeholder {
+    color: transparent;
+    transition: color 0.3s;
+}
+
+/* --- Animação Suave nos Botões --- */
+.btn-neon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+}
+
+.btn-neon:hover::before {
+    left: 100%;
+}
