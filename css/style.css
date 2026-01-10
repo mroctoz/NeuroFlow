@@ -633,3 +633,76 @@ input:focus::placeholder {
 .btn-neon:hover::before {
     left: 100%;
 }
+
+/* Adicione ao final do css/style.css */
+
+.section-title {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #fff;
+    border-left: 5px solid var(--primary-cyan);
+    padding-left: 1rem;
+}
+
+/* User Stats Grid */
+.user-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    text-align: center;
+}
+
+.stat-box h3 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: var(--primary-cyan);
+}
+
+.stat-box span {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+/* Lista de Desafios */
+.challenges-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 12px;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--secondary-purple);
+}
+
+/* Dev Mode Visual Indicator */
+body.dev-mode-active {
+    border: 2px solid var(--danger);
+}
+
+body.dev-mode-active::after {
+    content: 'DEV MODE';
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: var(--danger);
+    color: white;
+    padding: 5px 10px;
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 9999;
+}
