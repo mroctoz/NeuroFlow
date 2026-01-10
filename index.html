@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroFlow | Arquitetura da Mente</title>
+    <title>NeuroFlow | Sistema de Desenvolvimento Pessoal</title>
     
-    <!-- Fontes Premium -->
+    <!-- Fontes e Ícones -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <!-- Ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Estilos -->
@@ -18,7 +16,6 @@
 </head>
 <body>
 
-    <!-- Background Animado (Neurônios/Fluxo) -->
     <div class="ambient-background">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
@@ -27,28 +24,21 @@
 
     <div id="app-root">
         
-        <!-- TELA 1: LOGIN / ONBOARDING -->
+        <!-- TELA 1: LOGIN -->
         <section id="auth-screen" class="screen active">
             <div class="auth-container glass-panel">
                 <div class="auth-header">
-                    <div class="logo-large">
-                        <i class="fa-solid fa-brain"></i>
-                    </div>
+                    <div class="logo-large"><i class="fa-solid fa-brain"></i></div>
                     <h1>NeuroFlow</h1>
-                    <p>Neurociência aplicada para alta performance e regulação emocional.</p>
+                    <p>Neurociência aplicada para alta performance.</p>
                 </div>
                 <form id="login-form" class="auth-form">
                     <div class="input-group">
                         <i class="fa-regular fa-user"></i>
-                        <input type="text" id="username" placeholder="Como deseja ser chamado?" required autocomplete="off">
+                        <input type="text" id="username" placeholder="Como quer ser chamado?" required autocomplete="off">
                     </div>
-                    <button type="submit" class="btn-primary btn-lg btn-glow">
-                        Iniciar Jornada Neural <i class="fa-solid fa-arrow-right"></i>
-                    </button>
+                    <button type="submit" class="btn-primary btn-lg">Iniciar Jornada</button>
                 </form>
-                <div class="auth-footer">
-                    <p><i class="fa-solid fa-lock"></i> Seus dados ficam salvos apenas no seu navegador.</p>
-                </div>
             </div>
         </section>
 
@@ -64,18 +54,18 @@
                 <div class="user-profile">
                     <div class="avatar-container">
                         <div class="avatar-initials" id="user-avatar">U</div>
-                        <div class="status-indicator"></div>
                     </div>
                     <div class="user-details">
-                        <h3 id="display-name">Usuário</h3>
-                        <span class="user-level" id="user-level-display">Nível 1: Límbico</span>
+                        <h3 id="display-name">Visitante</h3>
+                        <span class="user-level" id="user-level-display">Nível 1</span>
                     </div>
                 </div>
 
+                <!-- Barra de XP (Causa comum de erro, ID corrigido) -->
                 <div class="xp-container">
                     <div class="xp-header">
-                        <span>Neuroplasticidade (XP)</span>
-                        <span id="xp-counter">0 / 100</span>
+                        <span>Neuroplasticidade</span>
+                        <span id="xp-counter">0 / 500</span>
                     </div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="xp-bar" style="width: 0%"></div>
@@ -84,92 +74,84 @@
 
                 <nav class="main-nav">
                     <ul>
-                        <li class="nav-item active" onclick="navigate('dashboard')">
+                        <li class="nav-item active" data-view="dashboard">
                             <i class="fa-solid fa-chart-pie"></i> Visão Geral
                         </li>
-                        <li class="nav-item" onclick="navigate('modules')">
-                            <i class="fa-solid fa-book-open"></i> Módulos & Aulas
+                        <li class="nav-item" data-view="modules">
+                            <i class="fa-solid fa-book-open"></i> Módulos
                         </li>
-                        <li class="nav-item" onclick="navigate('journal')">
-                            <i class="fa-solid fa-pen-fancy"></i> Diário Neuro-Emocional
+                        <li class="nav-item" data-view="journal">
+                            <i class="fa-solid fa-pen-fancy"></i> Diário
                         </li>
-                        <li class="nav-item" onclick="navigate('profile')">
-                            <i class="fa-solid fa-id-card"></i> Perfil Neural
+                        <li class="nav-item" data-view="library">
+                            <i class="fa-solid fa-layer-group"></i> Biblioteca
                         </li>
                     </ul>
                 </nav>
 
                 <div class="sidebar-bottom">
-                    <button class="btn-sos pulsate" onclick="openSOS()">
+                    <button class="btn-sos pulsate" onclick="App.toggleSOS(true)">
                         <i class="fa-solid fa-heart-pulse"></i> SOS AMÍGDALA
                     </button>
                 </div>
             </aside>
 
-            <!-- Área de Conteúdo -->
+            <!-- Conteúdo Principal -->
             <main class="content-area">
                 <header class="top-header">
                     <div class="header-text">
                         <h2 id="section-title">Dashboard</h2>
-                        <p id="section-subtitle">Bem-vindo ao seu centro de controle pré-frontal.</p>
+                        <p id="section-subtitle">Centro de controle do córtex pré-frontal.</p>
                     </div>
                     <div class="header-actions">
                         <div class="streak-badge">
                             <i class="fa-solid fa-fire"></i>
                             <span id="streak-count">0</span> Dias
                         </div>
+                        <div class="xp-badge-header">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span id="xp-points">0 XP</span>
+                        </div>
                     </div>
                 </header>
 
-                <!-- Container Dinâmico (Aqui o JS injetará o conteúdo) -->
-                <div id="dynamic-content" class="scroll-container">
-                    <!-- O conteúdo será gerado nas próximas etapas -->
-                    <div class="loading-state">
-                        <i class="fa-solid fa-circle-notch fa-spin"></i> Carregando sinapses...
-                    </div>
-                </div>
+                <!-- Área onde o conteúdo é injetado -->
+                <div id="dynamic-content" class="scroll-container"></div>
             </main>
         </section>
 
-        <!-- TELA 3: LEITOR IMERSIVO (MINI-LIVROS) -->
+        <!-- TELA 3: LEITOR -->
         <section id="reader-interface" class="screen hidden">
             <div class="reader-container glass-panel">
                 <div class="reader-header">
-                    <button class="btn-icon" onclick="closeReader()"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-                    <span id="reader-chapter-title">Módulo 1</span>
-                    <div class="reader-progress">
-                        <span id="reader-percent">0%</span>
-                    </div>
+                    <button class="btn-icon" onclick="App.closeReader()"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                    <span id="reader-title">Módulo</span>
+                    <span></span>
                 </div>
-                <div class="reader-content" id="reader-text-area">
-                    <!-- Texto injetado via JS -->
-                </div>
-                <div class="reader-footer">
-                    <button class="btn-primary" id="btn-complete-reading">Concluir Leitura & Ganhar XP</button>
-                </div>
+                <div class="reader-content" id="reader-text"></div>
             </div>
         </section>
 
-        <!-- MODAL: SOS AMÍGDALA (Sempre disponível) -->
+        <!-- MODAL SOS -->
         <div id="sos-modal" class="modal-overlay hidden">
             <div class="modal-card glass-panel">
-                <button class="modal-close" onclick="closeSOS()"><i class="fa-solid fa-xmark"></i></button>
-                <div class="sos-content text-center">
+                <button class="modal-close" onclick="App.toggleSOS(false)"><i class="fa-solid fa-xmark"></i></button>
+                <div class="sos-content">
                     <div class="icon-pulse-wrapper">
                         <i class="fa-solid fa-hand"></i>
                     </div>
-                    <h2>Sequestro Emocional Detectado</h2>
-                    <p>Sua amígdala desligou seu córtex pré-frontal. Não tome decisões agora.</p>
+                    <h2>Sequestro Emocional</h2>
+                    <p>Não tome decisões agora. Sua amígdala está no controle.</p>
                     
                     <div class="traffic-light">
-                        <div class="light red active">PARE</div>
-                        <div class="light yellow">RESPIRE</div>
-                        <div class="light green">PENSE</div>
+                        <div class="light red" id="light-red">PARE</div>
+                        <div class="light yellow" id="light-yellow">PENSE</div>
+                        <div class="light green" id="light-green">AJA</div>
                     </div>
 
                     <div class="breathing-guide">
                         <div class="circle"></div>
-                        <p id="breath-instruction">Inspire...</p>
+                        <p id="breath-text">Inspire...</p>
                     </div>
                 </div>
             </div>
@@ -177,9 +159,7 @@
 
     </div>
 
-    <!-- Scripts (Placeholder para as próximas etapas) -->
-    <script src="data.js"></script> <!-- Dados -->
-    <script src="engine.js"></script> <!-- Lógica -->
-    <script src="app.js"></script>    <!-- UI -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
