@@ -3,47 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroFlow | Sistema de Desenvolvimento Pessoal</title>
+    <title>NeuroFlow | Arquitetura da Mente</title>
     
-    <!-- Fontes e Ícones -->
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Estilos -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+    <!-- Background -->
     <div class="ambient-background">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="orb orb-3"></div>
     </div>
 
+    <!-- Container Principal -->
     <div id="app-root">
         
-        <!-- TELA 1: LOGIN -->
-        <section id="auth-screen" class="screen active">
+        <!-- TELA 1: LOGIN (Simplificada para evitar erros de form) -->
+        <div id="auth-screen" class="screen">
             <div class="auth-container glass-panel">
                 <div class="auth-header">
                     <div class="logo-large"><i class="fa-solid fa-brain"></i></div>
                     <h1>NeuroFlow</h1>
                     <p>Neurociência aplicada para alta performance.</p>
                 </div>
-                <form id="login-form" class="auth-form">
+                
+                <div class="auth-box">
                     <div class="input-group">
                         <i class="fa-regular fa-user"></i>
-                        <input type="text" id="username" placeholder="Como quer ser chamado?" required autocomplete="off">
+                        <!-- Adicionei onkeydown para funcionar o Enter -->
+                        <input type="text" id="username" placeholder="Como quer ser chamado?" autocomplete="off">
                     </div>
-                    <button type="submit" class="btn-primary btn-lg">Iniciar Jornada</button>
-                </form>
+                    <button id="btn-login" class="btn-primary btn-lg">Iniciar Jornada</button>
+                </div>
+
+                <p class="auth-footer"><i class="fa-solid fa-shield-halved"></i> Seus dados são salvos localmente.</p>
             </div>
-        </section>
+        </div>
 
         <!-- TELA 2: INTERFACE PRINCIPAL -->
-        <section id="main-interface" class="screen hidden">
+        <div id="main-interface" class="screen hidden">
             <!-- Sidebar -->
             <aside class="sidebar glass-panel">
                 <div class="brand">
@@ -61,7 +66,6 @@
                     </div>
                 </div>
 
-                <!-- Barra de XP (Causa comum de erro, ID corrigido) -->
                 <div class="xp-container">
                     <div class="xp-header">
                         <span>Neuroplasticidade</span>
@@ -74,16 +78,16 @@
 
                 <nav class="main-nav">
                     <ul>
-                        <li class="nav-item active" data-view="dashboard">
+                        <li class="nav-item active" onclick="App.router('dashboard', this)">
                             <i class="fa-solid fa-chart-pie"></i> Visão Geral
                         </li>
-                        <li class="nav-item" data-view="modules">
+                        <li class="nav-item" onclick="App.router('modules', this)">
                             <i class="fa-solid fa-book-open"></i> Módulos
                         </li>
-                        <li class="nav-item" data-view="journal">
+                        <li class="nav-item" onclick="App.router('journal', this)">
                             <i class="fa-solid fa-pen-fancy"></i> Diário
                         </li>
-                        <li class="nav-item" data-view="library">
+                        <li class="nav-item" onclick="App.router('library', this)">
                             <i class="fa-solid fa-layer-group"></i> Biblioteca
                         </li>
                     </ul>
@@ -108,20 +112,17 @@
                             <i class="fa-solid fa-fire"></i>
                             <span id="streak-count">0</span> Dias
                         </div>
-                        <div class="xp-badge-header">
-                            <i class="fa-solid fa-bolt"></i>
-                            <span id="xp-points">0 XP</span>
-                        </div>
                     </div>
                 </header>
 
-                <!-- Área onde o conteúdo é injetado -->
-                <div id="dynamic-content" class="scroll-container"></div>
+                <div id="dynamic-content" class="scroll-container">
+                    <!-- Conteúdo injetado via JS -->
+                </div>
             </main>
-        </section>
+        </div>
 
         <!-- TELA 3: LEITOR -->
-        <section id="reader-interface" class="screen hidden">
+        <div id="reader-interface" class="screen hidden">
             <div class="reader-container glass-panel">
                 <div class="reader-header">
                     <button class="btn-icon" onclick="App.closeReader()"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
@@ -130,7 +131,7 @@
                 </div>
                 <div class="reader-content" id="reader-text"></div>
             </div>
-        </section>
+        </div>
 
         <!-- MODAL SOS -->
         <div id="sos-modal" class="modal-overlay hidden">
@@ -141,7 +142,7 @@
                         <i class="fa-solid fa-hand"></i>
                     </div>
                     <h2>Sequestro Emocional</h2>
-                    <p>Não tome decisões agora. Sua amígdala está no controle.</p>
+                    <p>Sua amígdala disparou. Não tome decisões agora.</p>
                     
                     <div class="traffic-light">
                         <div class="light red" id="light-red">PARE</div>
@@ -159,6 +160,7 @@
 
     </div>
 
+    <!-- Scripts -->
     <script src="data.js"></script>
     <script src="app.js"></script>
 </body>
